@@ -4,6 +4,7 @@ import shortid from 'shortid';
 function App() {
   const [task, setTask] = useState('');
   const [tasks, setTasks] = useState([]);
+  const [edit, setEdit] = useState(false);
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -19,7 +20,14 @@ function App() {
     ])
     setTask('');
   }
-  
+  const handleDelete = id => {
+      const arrayFilter = tasks.filter(item => item.id !== id)
+      setTasks(arrayFilter)
+  }
+  const handleEdit = item => {
+      setEdit(true);
+      setTask(item.tarea)
+  }
   return (
     <div className="container mt-5">
       <h1 className='text-center'>CRUD APP</h1>
@@ -29,13 +37,21 @@ function App() {
           <h4 className="text-center">Lista de tareas</h4>
           <ul className="list-group">
               {
-                
-                  tasks.map(item =>(
-                    <li className="list-group-item" key={item.id}>
+                tasks == '' ? <p className='text-center'>No hay tareas</p>
+                  :tasks.map(item =>(
+                    <li className="list-group-item mb-2" key={item.id}>
                     <span className="lead" >{item.tarea}</span>
                     <div className="btn-group float-right">
-                      <button className="btn btn-danger btn-sm mx-2">Eliminar</button>
-                      <button className="btn btn-warning btn-sm mx-2">Editar</button>
+                      <button 
+                        className="btn btn-danger btn-sm mx-2"
+                        onClick={()=>handleDelete(item.id)}
+                      >Eliminar
+                      </button>
+                      <button 
+                        className="btn btn-warning btn-sm mx-2"
+                        onClick={()=>handleEdit(item)}
+                      >Editar
+                      </button>
                     </div>
                     </li>
                   ))
@@ -43,7 +59,9 @@ function App() {
           </ul>
         </div>
         <div className="col-4">
-          <h4 className="text-center">Formulario</h4>
+          <h4 className="text-center">
+            {edit ? 'Editar Tarea':'Agregar Tarea'}
+          </h4>
           <form onSubmit={handleSubmit}>
             <input 
               type="text"
@@ -52,7 +70,13 @@ function App() {
               onChange={e =>setTask(e.target.value)}
               value={task}
             />
-            <button className="btn btn-secondary btn-block" type='submit'>Agregar</button>
+            {
+              edit ? (
+                <button className="btn btn-secondary btn-block" type='submit'>Editar</button>
+              ) : (
+                <button className="btn btn-secondary btn-block" type='submit'>Agregar</button>
+              )
+            }
           </form>
         </div>
       </div>
