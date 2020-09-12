@@ -5,11 +5,13 @@ function App() {
   const [task, setTask] = useState('');
   const [tasks, setTasks] = useState([]);
   const [edit, setEdit] = useState(false);
+  const [id, setId] = useState('');
+  const [error, setError] = useState(null);
 
   const handleSubmit = e => {
     e.preventDefault()
     if (!task.trim()) {
-      console.log('Elemento vacio')
+      setError('Escriba algo...')
       return
     }
     setTasks([
@@ -19,6 +21,7 @@ function App() {
       tarea:task}
     ])
     setTask('');
+    setError(null);
   }
   const handleDelete = id => {
       const arrayFilter = tasks.filter(item => item.id !== id)
@@ -27,6 +30,25 @@ function App() {
   const handleEdit = item => {
       setEdit(true);
       setTask(item.tarea)
+      setId(item.id);
+  }
+  const handleEditForm = e => {
+    e.preventDefault();
+    if (!task.trim()) {
+      setError('Escriba algo...')
+      return
+    }
+  const array = tasks.map(item => item.id === id
+    ?{
+      id,
+      tarea:task
+    } :
+    item)
+    setTasks(array)
+    setEdit(false)
+    setTask('')
+    setId('')
+    setError(null);
   }
   return (
     <div className="container mt-5">
@@ -37,7 +59,7 @@ function App() {
           <h4 className="text-center">Lista de tareas</h4>
           <ul className="list-group">
               {
-                tasks == '' ? <p className='text-center'>No hay tareas</p>
+                tasks.length === 0 ? <p className='text-center'>No hay tareas</p>
                   :tasks.map(item =>(
                     <li className="list-group-item mb-2" key={item.id}>
                     <span className="lead" >{item.tarea}</span>
@@ -62,7 +84,10 @@ function App() {
           <h4 className="text-center">
             {edit ? 'Editar Tarea':'Agregar Tarea'}
           </h4>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={edit ? handleEditForm : handleSubmit}>
+            {
+              error ? <span className='text-danger'>{error}</span>: null
+            }
             <input 
               type="text"
               className='form-control mb-2'
